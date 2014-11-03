@@ -215,9 +215,11 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			this.requires('Base');
 
 			this.health = 100;
+			this._sendHealthChangeEvent(this.health);
 		},
 		alive: function(startingHealth) {
 			this.health = startingHealth || 100;
+			this._sendHealthChangeEvent(this.health);
 
 			return this;
 		},
@@ -287,10 +289,12 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			});
 
 			this._meatCount = 0;
+			$('.meat-counter').html('x' + this._meatCount);
 
 			this.cleanBind('damaged', this._onDamaged, 'PlayerCharacter');
 			this.cleanBind('healthChanged', this._onHealthChanged, 'PlayerCharacter');
 			this.cleanBind('death', this._onDeath, 'PlayerCharacter');
+
 
 			this._characterImage = new Image();
 			this._characterImageLoaded = false;
@@ -415,6 +419,9 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 				// Subtact the meat, add the health
 				this._meatCount--;
 				this.heal(10);
+
+				// Play sound
+				Crafty.audio.play('eating-chomping');
 
 				$('.meat-counter').html('x' + this._meatCount);
 			}
