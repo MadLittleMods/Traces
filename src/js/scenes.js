@@ -139,7 +139,7 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 				var buildingCenter = building.getActualPositionCenter();
 				var nextBuildingCenter = nextBuilding.getActualPositionCenter();
 
-				for(var i = 0; i < (index+1)*5; i++)
+				for(var i = 0; i < (index+1)*8; i++)
 				{
 					var randX = Math.floor(Math.random() * (Math.abs(nextBuildingCenter.x-buildingCenter.x))) + Math.floor(Math.min(buildingCenter.x, nextBuildingCenter.x));
 					var randY = Math.floor(Math.random() * (Math.abs(nextBuildingCenter.y-buildingCenter.y))) + Math.floor(Math.min(buildingCenter.y, nextBuildingCenter.y));
@@ -211,9 +211,9 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 			'audio/player-death.ogg',
 			'audio/player-death.aac',
 
-			'audio/player-grunt.mp3',
-			'audio/player-grunt.ogg',
-			'audio/player-grunt.aac',
+			'audio/player-grunt2.mp3',
+			'audio/player-grunt2.ogg',
+			'audio/player-grunt2.aac',
 
 			'audio/eating-chomping.mp3',
 			'audio/eating-chomping.ogg',
@@ -261,9 +261,9 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 					'audio/player-death.aac'
 				],
 				'player-grunt': [
-					'audio/player-grunt.mp3',
-					'audio/player-grunt.ogg',
-					'audio/player-grunt.aac'
+					'audio/player-grunt2.mp3',
+					'audio/player-grunt2.ogg',
+					'audio/player-grunt2.aac'
 				],
 				'eating-chomping': [
 					'audio/eating-chomping.mp3',

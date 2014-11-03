@@ -23861,7 +23861,7 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 				var buildingCenter = building.getActualPositionCenter();
 				var nextBuildingCenter = nextBuilding.getActualPositionCenter();
 
-				for(var i = 0; i < (index+1)*5; i++)
+				for(var i = 0; i < (index+1)*8; i++)
 				{
 					var randX = Math.floor(Math.random() * (Math.abs(nextBuildingCenter.x-buildingCenter.x))) + Math.floor(Math.min(buildingCenter.x, nextBuildingCenter.x));
 					var randY = Math.floor(Math.random() * (Math.abs(nextBuildingCenter.y-buildingCenter.y))) + Math.floor(Math.min(buildingCenter.y, nextBuildingCenter.y));
@@ -23933,9 +23933,9 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 			'audio/player-death.ogg',
 			'audio/player-death.aac',
 
-			'audio/player-grunt.mp3',
-			'audio/player-grunt.ogg',
-			'audio/player-grunt.aac',
+			'audio/player-grunt2.mp3',
+			'audio/player-grunt2.ogg',
+			'audio/player-grunt2.aac',
 
 			'audio/eating-chomping.mp3',
 			'audio/eating-chomping.ogg',
@@ -23983,9 +23983,9 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 					'audio/player-death.aac'
 				],
 				'player-grunt': [
-					'audio/player-grunt.mp3',
-					'audio/player-grunt.ogg',
-					'audio/player-grunt.aac'
+					'audio/player-grunt2.mp3',
+					'audio/player-grunt2.ogg',
+					'audio/player-grunt2.aac'
 				],
 				'eating-chomping': [
 					'audio/eating-chomping.mp3',
@@ -24608,8 +24608,13 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 		_onDeath: function(e) {
 			Crafty.audio.play('player-death');
 
-			// Give them a chance to play again
-			Game.popRestartGameDialogue("You Lost.");
+			// Make sure the game started and not completed
+			// Because we allow people to play behind the "Play Again?" popup
+			if(Game.status == Game.statusEnum['started'])
+			{
+				// Give them a chance to play again
+				Game.popRestartGameDialogue("You Lost.");
+			}
 
 			this.destroy();
 		},
@@ -25354,6 +25359,17 @@ define('game',['crafty', 'jquery', 'general.utilities', 'scenes', 'components'],
 			worldLayerTop: 800
 		},
 
+		statusEnum: {
+			'not-started': 0,
+			'started': 1,
+			'complete': 2
+		},
+
+		status: (function() {
+			return this.statusEnum['not-started'];
+		}),
+
+
 		popRestartGameDialogue: function(message, showPlayAgain) {
 			// Make the default true if they don't provide it explicitly
 			showPlayAgain = showPlayAgain == null ? true : showPlayAgain;
@@ -25363,6 +25379,17 @@ define('game',['crafty', 'jquery', 'general.utilities', 'scenes', 'components'],
 			var content = '<h1 class="game-status-box-message">' + message + '</h1>';
 			if(showPlayAgain) {
 				content += '<button class="play-again">Play Again?</button>';
+
+				content += '<div class="credits-box">';
+					content += '<div>Developed by <a href="http://ericeastwood.com/">Eric Eastwood</a></div>';
+					content += '<hr />';
+					content += '<div><strong>Assets:</strong></div>';
+					content += '<ul class="credits-box-attribution">';
+						content += '<li><strong><a href="http://opengameart.org/users/remaxim">remaxim:</strong> <a href="http://opengameart.org/content/win-sound-2">Sound Effects</a></li>';
+						content += '<li><strong><a href="http://opengameart.org/users/prinsu-kun">Prinsu-Kun:</strong> <a href="http://opengameart.org/content/retro-deaddestroyeddamaged-sound">Sound Effects</a></li>';
+						content += '<li><strong><a href="http://opengameart.org/users/caeles">caeles:</strong> <a href="http://opengameart.org/content/shadowless-lpc-food">Sprites</a></li>';
+					content += '</ul>';
+				content += '</div>';
 			}
 
 			var $statusContents = $(content).appendTo($statusBox);

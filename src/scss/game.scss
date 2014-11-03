@@ -24,6 +24,22 @@ body
 	font-family: Arial;
 }
 
+a
+{
+	color: inherit;
+}
+
+hr
+{
+	height: 0;
+	margin: 8px 0;
+	padding: 0;
+
+	background: none;
+	border: 0;
+	border-bottom: 1px solid;
+}
+
 
 .game-wrapper
 {
@@ -194,6 +210,24 @@ body
 		font-weight: bold;
 		text-align: center;
 	}
+
+	.credits-box
+	{
+		margin-top: 8px;
+		padding: 8px;
+
+		background: rgba(255, 255, 255, 0.3);
+		@include box-shadow(0 0 8px rgba(0, 0, 0, 0.3));
+
+		text-align: left;
+	}
+
+		.credits-box-attribution
+		{
+			margin: 8px 0;
+
+			font-size: 90%;
+		}
 
 
 

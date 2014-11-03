@@ -27,6 +27,17 @@ define(['crafty', 'jquery', 'general.utilities', 'scenes', 'components'], functi
 			worldLayerTop: 800
 		},
 
+		statusEnum: {
+			'not-started': 0,
+			'started': 1,
+			'complete': 2
+		},
+
+		status: (function() {
+			return this.statusEnum['not-started'];
+		}),
+
+
 		popRestartGameDialogue: function(message, showPlayAgain) {
 			// Make the default true if they don't provide it explicitly
 			showPlayAgain = showPlayAgain == null ? true : showPlayAgain;
@@ -36,6 +47,17 @@ define(['crafty', 'jquery', 'general.utilities', 'scenes', 'components'], functi
 			var content = '<h1 class="game-status-box-message">' + message + '</h1>';
 			if(showPlayAgain) {
 				content += '<button class="play-again">Play Again?</button>';
+
+				content += '<div class="credits-box">';
+					content += '<div>Developed by <a href="http://ericeastwood.com/">Eric Eastwood</a></div>';
+					content += '<hr />';
+					content += '<div><strong>Assets:</strong></div>';
+					content += '<ul class="credits-box-attribution">';
+						content += '<li><strong><a href="http://opengameart.org/users/remaxim">remaxim:</strong> <a href="http://opengameart.org/content/win-sound-2">Sound Effects</a></li>';
+						content += '<li><strong><a href="http://opengameart.org/users/prinsu-kun">Prinsu-Kun:</strong> <a href="http://opengameart.org/content/retro-deaddestroyeddamaged-sound">Sound Effects</a></li>';
+						content += '<li><strong><a href="http://opengameart.org/users/caeles">caeles:</strong> <a href="http://opengameart.org/content/shadowless-lpc-food">Sprites</a></li>';
+					content += '</ul>';
+				content += '</div>';
 			}
 
 			var $statusContents = $(content).appendTo($statusBox);

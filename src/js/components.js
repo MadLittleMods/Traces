@@ -448,8 +448,13 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 		_onDeath: function(e) {
 			Crafty.audio.play('player-death');
 
-			// Give them a chance to play again
-			Game.popRestartGameDialogue("You Lost.");
+			// Make sure the game started and not completed
+			// Because we allow people to play behind the "Play Again?" popup
+			if(Game.status == Game.statusEnum['started'])
+			{
+				// Give them a chance to play again
+				Game.popRestartGameDialogue("You Lost.");
+			}
 
 			this.destroy();
 		},
