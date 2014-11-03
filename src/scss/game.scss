@@ -29,6 +29,8 @@ body
 {
 	width: 100%;
 	height: 100%;
+
+	overflow: hidden;
 }
 
 	.game-stage
@@ -192,3 +194,27 @@ body
 		font-weight: bold;
 		text-align: center;
 	}
+
+
+
+.activate-building-control-box
+{
+	margin: 10px 0;
+	padding: 10px 0;
+
+	background: rgba(#cc6494, 0.2);
+
+	@include border-radius(4px);
+
+	@include animation(attention-highlight 0.4s infinite alternate ease);
+}
+
+@include keyframes(attention-highlight)
+{
+	0% {
+		background: rgba(#cc6494, 0.2);
+	}
+	100% {
+		background: rgba(#cc6494, 0);
+	}
+}

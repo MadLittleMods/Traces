@@ -240,6 +240,8 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 				currentHealth: this.health,
 				damage: amount
 			});
+
+			this._sendHealthChangeEvent(beforeDamageHealth);
 		},
 
 		heal: function(amount) {
@@ -251,6 +253,17 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 				currentHealth: this.health,
 				heal: amount
 			});
+
+			this._sendHealthChangeEvent(beforeHealHealth);
+		},
+
+		_sendHealthChangeEvent: function(beforeHealth)
+		{
+			this.trigger('healthChanged', {
+				previousHealth: beforeHealth,
+				currentHealth: this.health
+			});
+			
 		}
 	});
 
@@ -276,6 +289,7 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			this._meatCount = 0;
 
 			this.cleanBind('damaged', this._onDamaged, 'PlayerCharacter');
+			this.cleanBind('healthChanged', this._onHealthChanged, 'PlayerCharacter');
 			this.cleanBind('death', this._onDeath, 'PlayerCharacter');
 
 			this._characterImage = new Image();
@@ -312,6 +326,15 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			Crafty.addEvent(this, $('.game-wrapper')[0], 'mousedown', this._onMouseDown);
 			this.one('Remove', function() {
 				Crafty.removeEvent(this, $('.game-wrapper')[0], 'mousedown', this._onMouseDown);
+			});
+
+			Crafty.addEvent(this, window, 'mousewheel', this._onMouseScroll);
+			this.one('Remove', function() {
+				Crafty.removeEvent(this,window, 'mousewheel', this._onMouseScroll);
+			});
+			Crafty.addEvent(this,window, 'DOMMouseScroll', this._onMouseScroll);
+			this.one('Remove', function() {
+				Crafty.removeEvent(this, window, 'scroll DOMMouseScroll', this._onMouseScroll);
 			});
 
 
@@ -383,11 +406,27 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			}
 		},
 
-		_onDamaged: function(e) {
-			Crafty.audio.play('player-grunt');
+		_consumeMeat: function() {
+			var maxHealth = 100;
 
+			// If we have some meat
+			if(this._meatCount > 0 && this.health < maxHealth)
+			{
+				// Subtact the meat, add the health
+				this._meatCount--;
+				this.heal(10);
+
+				$('.meat-counter').html('x' + this._meatCount);
+			}
+		},
+
+		_onHealthChanged: function(e) {
 			var maxHealth = 100;
 			$('.health-bar-liquid').css('width', (e.currentHealth/maxHealth)*100 + '%');
+		},
+
+		_onDamaged: function(e) {
+			Crafty.audio.play('player-grunt');
 		},
 
 		_onDeath: function(e) {
@@ -425,15 +464,23 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 
 
 			// Spawn a bullet on click
-			Crafty.e('Bullet').bullet(new utility.Vector2(actualPosition.x, actualPosition.y), this.rotation, 500);
+			Crafty.e('Bullet').bullet(new utility.Vector2(actualPosition.x, actualPosition.y), this.rotation, 800);
 
 			// Play sound
 			Crafty.audio.play('gun-shot');
 		},
 
+		_onMouseScroll: function(e) {
+			this._consumeMeat();
+		},
+
 		_onKeyDown: function(e) {
 			if(e.key == Crafty.keys.E) {
 				this._triggerAcivateBuilding();
+			}
+
+			if(e.key == Crafty.keys.M || e.key == Crafty.keys.SPACE) {
+				this._consumeMeat();
 			}
 		},
 
@@ -468,7 +515,7 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 
 			this._originalPosition = position;
 			this._speed = speed;
-			this._maxDistance = maxDistance || 5000;
+			this._maxDistance = maxDistance || 1000;
 
 			// Hook into the update loop
 			this.cleanBind('EnterFrame', this._update, 'Bullet');
@@ -476,6 +523,8 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 
 		_update: function(e) {
 			var dt = e.dt*0.001;
+
+			//console.log("bullet: " + this._entityName);
 
 			// Get the forward vector
 			// It is already normalized since we use cos and sin but we are just being careful by normalizing at the end
@@ -633,6 +682,7 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			this._damageCooldownTimer += dt;
 
 
+			/* */
 			// If the bullet runs into a enemy, destroy it
 			var hitdata = this.hit('Bullet');
 			if (hitdata && hitdata.length > 0)
@@ -644,21 +694,58 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 
 
 
-			// If a enemy hits the player, damage him
-			var playerHitData = this.hit('PlayerCharacter');
-			if (playerHitData && playerHitData.length > 0)
+			if(this._damageCooldownTimer >= this._damageCooldown)
 			{
-				//console.log(playerHitData);
-
-				if(this._damageCooldownTimer >= this._damageCooldown)
+				// If a enemy hits the player, damage him
+				var playerHitData = this.hit('PlayerCharacter');
+				if (playerHitData && playerHitData.length > 0)
 				{
+					//console.log(playerHitData);
+
 					playerHitData[0].obj.damage(10);
 					//console.log(playerHitData[0].obj);
 
 					this._damageCooldownTimer = 0;
 				}
 			}
+			/* */
 
+
+			// Check if the current player is close enough otherwise, check for another player
+			var enemyCenter = this.getActualPositionCenter();
+			var distanceBetween = this._currentTargetPlayer ? utility.distanceBetween(enemyCenter, this._currentTargetPlayer.getActualPositionCenter()) : false;
+			if(!this._currentTargetPlayer || distanceBetween > this._aggroDistance)
+			{
+				this._currentTargetPlayer = this._findClosestPlayer();
+			}
+
+			// If there is a target and it is close enough, go get it
+			if(this._currentTargetPlayer && distanceBetween <= this._aggroDistance)
+			{
+				// Check if the blob enemy is running into anything
+				// The blog can't move in the direction of a collision
+				var solidHitData = this.hit('Solid');
+				
+				var normalDirectionVector = null;
+				if (solidHitData && solidHitData.length > 0)
+				{
+					normalDirectionVector = new utility.Vector2(solidHitData[0].normal.x, solidHitData[0].normal.y).normalized();
+				}
+
+				var playerPos = new utility.Vector2(this._currentTargetPlayer.x, this._currentTargetPlayer.y);
+				var thisPos = new utility.Vector2(this.x, this.y);
+
+				var directionVector = playerPos.subtract(thisPos).normalized();
+
+				var xSpeed = !normalDirectionVector || normalDirectionVector.x === 0 ? directionVector.x*this._speed*dt : 0;
+				var ySpeed = !normalDirectionVector || normalDirectionVector.y === 0 ? directionVector.y*this._speed*dt : 0;
+
+				this.shift(xSpeed, ySpeed);
+			}
+		},
+
+		_findClosestPlayer: function() {
+			var self = this;
 
 			// Follow the closest player in aggro range
 			var enemyCenter = this.getActualPositionCenter();
@@ -673,7 +760,8 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 
 					// If in aggro range
 					// and is the closest so far
-					if(distanceBetween < self._aggroDistance && (currentClosestDistance == null || distanceBetween < currentClosestDistance))
+					//console.log(distanceBetween, self._aggroDistance, currentClosestDistance, distanceBetween);
+					if(distanceBetween <= self._aggroDistance && (currentClosestDistance == null || distanceBetween < currentClosestDistance))
 					{
 						closestPlayer = player;
 						currentClosestDistance = distanceBetween;
@@ -681,28 +769,7 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 				});
 			}
 
-			if(closestPlayer)
-			{
-				// If the character is not running into anything
-				var solidHitData = this.hit('Solid');
-				
-				var normalDirectionVector = null;
-				if (solidHitData && solidHitData.length > 0)
-				{
-					normalDirectionVector = new utility.Vector2(solidHitData[0].normal.x, solidHitData[0].normal.y).normalized();
-				}
-
-				var playerPos = new utility.Vector2(closestPlayer.x, closestPlayer.y);
-				var thisPos = new utility.Vector2(this.x, this.y);
-
-				var directionVector = playerPos.subtract(thisPos).normalized();
-
-				var xSpeed = !normalDirectionVector || normalDirectionVector.x === 0 ? directionVector.x*this._speed*dt : 0;
-				var ySpeed = !normalDirectionVector || normalDirectionVector.y === 0 ? directionVector.y*this._speed*dt : 0;
-
-				this.shift(xSpeed, ySpeed);
-				
-			}
+			return closestPlayer;
 		},
 
 		_onDamaged: function(e) {

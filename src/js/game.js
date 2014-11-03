@@ -27,9 +27,18 @@ define(['crafty', 'jquery', 'general.utilities', 'scenes', 'components'], functi
 			worldLayerTop: 800
 		},
 
-		popRestartGameDialogue: function(message) {
+		popRestartGameDialogue: function(message, showPlayAgain) {
+			// Make the default true if they don't provide it explicitly
+			showPlayAgain = showPlayAgain == null ? true : showPlayAgain;
+
 			var $statusBox = $('.game-ui').find('.game-status-box');
-			var $statusContents = $('<h1 class="game-status-box-message">' + message + '</h1><button class="play-again">Play Again?</button>').appendTo($statusBox);
+			
+			var content = '<h1 class="game-status-box-message">' + message + '</h1>';
+			if(showPlayAgain) {
+				content += '<button class="play-again">Play Again?</button>';
+			}
+
+			var $statusContents = $(content).appendTo($statusBox);
 			$statusContents.filterFind('.play-again').on('click', function() {
 				// Restart the game
 				Crafty.scene('Game');
@@ -37,6 +46,13 @@ define(['crafty', 'jquery', 'general.utilities', 'scenes', 'components'], functi
 				// Get these out of the way since they restarted the game
 				$statusContents.remove();
 			});
+		},
+
+		clearGameDialogue: function() {
+			var $statusBox = $('.game-ui').find('.game-status-box');
+
+			// Clear it out
+			$statusBox.html('');
 		},
 
 

@@ -27,7 +27,7 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 
 		var building1 = Crafty.e('ObjectiveBuilding').building({
 			shape: rectBuildingShape,
-			position: new utility.Vector2(300, 300),
+			position: new utility.Vector2(300, 100),
 			numFloors: 1,
 			focalEntity: viewportCenter,
 			topColor: '#ffa9d4',
@@ -43,7 +43,7 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 
 		var building2 = Crafty.e('ObjectiveBuilding').building({
 			shape: rectBuildingShape,
-			position: new utility.Vector2(1000, 300),
+			position: new utility.Vector2(1000, 100),
 			numFloors: 1,
 			focalEntity: viewportCenter,
 			topColor: '#ffa9d4',
@@ -128,12 +128,44 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 		
 
 
+		// Add enemies along the way
+		buildingList.forEach(function(building, index, buildingList) {
+			// If there is another building after the current
+			if(index+1 < buildingList.length)
+			{
+				var nextBuilding = buildingList[index+1];
 
+				var buildingCenter = building.getActualPositionCenter();
+				var nextBuildingCenter = nextBuilding.getActualPositionCenter();
+
+				for(var i = 0; i < (index+1)*5; i++)
+				{
+					var randX = Math.floor(Math.random() * (Math.abs(nextBuildingCenter.x-buildingCenter.x))) + Math.floor(Math.min(buildingCenter.x, nextBuildingCenter.x));
+					var randY = Math.floor(Math.random() * (Math.abs(nextBuildingCenter.y-buildingCenter.y))) + Math.floor(Math.min(buildingCenter.y, nextBuildingCenter.y));
+
+					var pointOnLine = new utility.Vector2(randX, randY).closestPointOnLine(buildingCenter, nextBuildingCenter);
+
+
+					var variationX = Math.floor(Math.random() * (300));
+					var variationY = Math.floor(Math.random() * (300));
+
+					this.enemy = Crafty.e('EnemyBlob')
+						.attr({
+							x: pointOnLine.x + variationX,
+							y: pointOnLine.y + variationY
+						});
+				}
+			}
+		});
+
+
+		/* * /
 		this.enemy = Crafty.e('EnemyBlob')
 			.attr({
 				x: 50,
 				y: 50
 			});
+		/* * /
 
 
 
@@ -154,6 +186,8 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 
 
 	Crafty.scene('Loading', function() {
+		Game.popRestartGameDialogue("Loading...", false);
+
 		// Load our sprite map image
 		Crafty.load([
 			// Sprites
@@ -237,6 +271,8 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 					'audio/enemy-hurt2.aac'
 				]
 			});
+
+			Game.clearGameDialogue();
 
 			// Now that our sprites are ready to draw, start the game
 			Crafty.scene('Game');
