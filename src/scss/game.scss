@@ -1,0 +1,194 @@
+@import "mixins";
+
+
+*, *:before, *:after
+{
+	@include box-sizing(border-box);
+}
+
+html, body
+{
+	padding: 0;
+	margin: 0;
+}
+html
+{
+	width: 100%;
+	height: 100%;
+}
+body
+{
+	min-width: 100%;
+	min-height: 100%;
+
+	font-family: Arial;
+}
+
+
+.game-wrapper
+{
+	width: 100%;
+	height: 100%;
+}
+
+	.game-stage
+	{
+		width: 100%;
+		height: 100%;
+	}
+
+	.game-ui
+	{
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		position: absolute;
+		width: 100%;
+		height: 100%;
+
+		// Crafty puts a z-index on the canvas.... so we have to beat it
+		z-index: 100;
+
+		@include no-select();
+	}
+
+
+
+.keycap-holder
+{
+	@include inline-block(top);
+	
+	text-align: center;
+}
+
+.keycap
+{
+	@include inline-block(top);
+	
+	width: 40px;
+	height: 40px;
+	position: relative;
+	z-index: 1;
+	
+	margin: 2px;
+	padding-top: 6px;
+	padding-left: 8px;
+	
+	background: #aaaaaa;
+	border: 1px solid rgba(0, 0, 0, .1);
+
+	color: #444444;
+	text-align: left;
+	
+	@include border-radius(8px);
+}
+
+.keycap:before
+{
+	content: '';
+	
+	position: absolute;
+	top: 2px;
+	bottom: 4px;
+	right: 4px;
+	left: 4px;
+	
+	z-index: -1;
+	
+	 background: #cccccc;
+	 border: 1px solid rgba(255, 255, 255, .1);
+	
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+}
+
+.keycap.longer
+{
+	width: 80px; 
+}
+
+
+
+.control-key-box
+{
+	position: absolute;
+	top: 40px;
+	left: 40px;
+}
+
+
+.vitals-box
+{
+	position: absolute;
+	bottom: 40px;
+	left: 40px;
+}
+
+.meat-counter
+{
+	margin-bottom: 20px;
+
+	&:before
+	{
+		content: '';
+
+		@include inline-block(middle);
+		width: 32px;
+		height: 32px;
+
+		margin-right: 8px;
+
+		background-image: url('../images/meat-sprite1.png');
+		background-repeat: no-repeat;
+		background-position: 0 0;
+	}
+}
+
+.health-bar
+{
+	width: 200px;
+	height: 20px;
+
+	background: rgba(0, 0, 0, .8);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.health-bar-liquid
+{
+	width: 100%;
+	height: 100%;
+
+	background: rgba(0, 255, 0, 0.9);
+
+	@include transition(all 0.2s linear);
+}
+
+
+
+.game-status-box
+{
+	text-align: center;
+}
+
+	.play-again
+	{
+		@include inline-block(middle);
+
+		width: 100%;
+		height: 50px;
+
+		padding: 0 12px;
+
+		background: #6c5bb2;
+		border: 0;
+		@include box-shadow(0 0 8px rgba(0, 0, 0, 0.5));
+
+		color: #eeeeee;
+		font-size: 24px;
+		line-height: 50px;
+		font-weight: bold;
+		text-align: center;
+	}
