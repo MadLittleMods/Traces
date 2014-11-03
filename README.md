@@ -1,7 +1,9 @@
 Traces
 ======
 
-HTML5 Browser Game created in 3 days for the [GDSE Anniversary Game Jam 2014](http://meta.gamedev.stackexchange.com/q/1794/16587)
+HTML5 canvas browser game created in 3 days for the [GDSE Anniversary Game Jam 2014](http://meta.gamedev.stackexchange.com/q/1794/16587). 
+
+Powered by [CraftyJS](http://craftyjs.com/).
 
 
 # Attribution:
