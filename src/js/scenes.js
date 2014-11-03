@@ -5,6 +5,7 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 		console.log('Spawning player');
 		this.player = Crafty.e('PlayerCharacter');
 
+
 		// Make the camera follow the player
 		Crafty.viewport.clampToEntities = false;
 		//Crafty.viewport.follow(this.player, 0, 0);
@@ -146,8 +147,8 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 					var pointOnLine = new utility.Vector2(randX, randY).closestPointOnLine(buildingCenter, nextBuildingCenter);
 
 
-					var variationX = Math.floor(Math.random() * (300));
-					var variationY = Math.floor(Math.random() * (300));
+					var variationX = Math.floor(Math.random() * (300)) - 150;
+					var variationY = Math.floor(Math.random() * (300)) - 150;
 
 					this.enemy = Crafty.e('EnemyBlob')
 						.attr({
@@ -208,6 +209,10 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 			'audio/player-grunt.ogg',
 			'audio/player-grunt.aac',
 
+			'audio/eating-chomping.mp3',
+			'audio/eating-chomping.ogg',
+			'audio/eating-chomping.aac',
+
 			'audio/gun-shot1.mp3',
 			'audio/gun-shot1.ogg',
 			'audio/gun-shot1.aac',
@@ -249,6 +254,11 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 					'audio/player-grunt.mp3',
 					'audio/player-grunt.ogg',
 					'audio/player-grunt.aac'
+				],
+				'eating-chomping': [
+					'audio/eating-chomping.mp3',
+					'audio/eating-chomping.ogg',
+					'audio/eating-chomping.aac'
 				],
 				'gun-shot': [
 					'audio/gun-shot1.mp3',
