@@ -37,7 +37,7 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 		buildingList.push(building1);
 
 		/* * /
-		Crafty.addEvent(this, Crafty.stage.elem, 'mousedown', function(e) {
+		Crafty.addEvent(this, $('.game-wrapper')[0], 'mousedown', function(e) {
 			building1.rotation += 10;
 		});
 		/* */
@@ -150,7 +150,7 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 					var variationX = Math.floor(Math.random() * (300)) - 150;
 					var variationY = Math.floor(Math.random() * (300)) - 150;
 
-					this.enemy = Crafty.e('EnemyBlob')
+					var enemy = Crafty.e('EnemyBlob')
 						.attr({
 							x: pointOnLine.x + variationX,
 							y: pointOnLine.y + variationY
@@ -161,12 +161,18 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 
 
 		/* * /
-		this.enemy = Crafty.e('EnemyBlob')
+		var enemy = Crafty.e('EnemyBlob')
 			.attr({
-				x: 50,
+				x: -350,
 				y: 50
 			});
 		/* * /
+		/* * /
+		Crafty.addEvent(this, $('.game-wrapper')[0], 'mousedown', function(e) {
+			console.log('rotating');
+			enemy.rotation += 8;
+		});
+		/* */
 
 
 
@@ -212,6 +218,10 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 			'audio/eating-chomping.mp3',
 			'audio/eating-chomping.ogg',
 			'audio/eating-chomping.aac',
+
+			'audio/pickup-meat.mp3',
+			'audio/pickup-meat.ogg',
+			'audio/pickup-meat.aac',
 
 			'audio/gun-shot1.mp3',
 			'audio/gun-shot1.ogg',
@@ -259,6 +269,11 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 					'audio/eating-chomping.mp3',
 					'audio/eating-chomping.ogg',
 					'audio/eating-chomping.aac'
+				],
+				'pickup-meat': [
+					'audio/pickup-meat.mp3',
+					'audio/pickup-meat.ogg',
+					'audio/pickup-meat.aac'
 				],
 				'gun-shot': [
 					'audio/gun-shot1.mp3',

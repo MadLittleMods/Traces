@@ -293,6 +293,11 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 
 			this.cleanBind('damaged', this._onDamaged, 'PlayerCharacter');
 			this.cleanBind('healthChanged', this._onHealthChanged, 'PlayerCharacter');
+			// Reset the UI
+			this._onHealthChanged({
+				previousHealth: 100,
+				currentHealth: 100
+			});
 			this.cleanBind('death', this._onDeath, 'PlayerCharacter');
 
 
@@ -371,10 +376,14 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 				meatHitData.forEach(function(meat, index, array) {
 					self._meatCount++;
 
+					// Update the UI
 					$('.meat-counter').html('x' + self._meatCount);
 
 					// Remove the meat off of the floor
 					meat.obj.destroy();
+
+					// Play sound
+					Crafty.audio.play('pickup-meat');
 				});
 			}
 		},
@@ -446,7 +455,8 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 		},
 
 		_onMouseMove: function(e) {
-			var mousePosition = this._screenSpaceToGameSpace(e);
+			var rawMousePos =  new utility.Vector2(e.x || e.clientX, e.y || e.clientY);
+			var mousePosition = this._screenSpaceToGameSpace(rawMousePos);
 			
 			var characterPositionOffset = new utility.Vector2(this.w/2, this.h-(this.h/3));
 
