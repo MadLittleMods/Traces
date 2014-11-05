@@ -1,4 +1,6 @@
-require(['game', 'jquery'], function(Game, $) {
+require(['jquery', 'general.utilities', 'game', 'scenes', 'components'], function($, utlity, Game, _scenes, _components) {
+	"use strict";
+
 	//console.log('init');
 	//console.log("game: ", Game);
 

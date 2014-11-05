@@ -1,6 +1,11 @@
-require(['crafty', 'general.utilities'], function(Crafty, utility) {
+define(['crafty', 'general.utilities', 'game'], function(Crafty, utility, Game) {
+	"use strict";
 
 	Crafty.scene('Game', function() {
+
+		// The game has started
+		Game.status = Game.statusEnum['started'];
+
 		// Spawn Player character
 		console.log('Spawning player');
 		this.player = Crafty.e('PlayerCharacter');
@@ -118,6 +123,9 @@ require(['crafty', 'general.utilities'], function(Crafty, utility) {
 
 					// Give them a chance to play again
 					Game.popRestartGameDialogue("You Won!");
+
+					// The game is not complete
+					Game.status = Game.statusEnum['complete'];
 				}
 			}
 

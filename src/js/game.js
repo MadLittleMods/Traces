@@ -1,44 +1,47 @@
-define(['crafty', 'jquery', 'general.utilities', 'scenes', 'components'], function(Crafty, $, utility, _scenes, _components) {
+define(['crafty', 'jquery'], function(Crafty, $) {
 	"use strict";
 
-	window.Game = {
+	// This is kind of the overarching state of the game
+	function Game()
+	{
 
-		stage: $('.game-stage')[0],
+		this.debugId = Math.random() * 100;
+
+		this.stage = $('.game-stage')[0];
 
 		// The total width of the game screen. Since our grid takes up the entire screen
 		// this is just the width of a tile times the width of the grid
-		width: function() {
+		this.width = function() {
 			return $(this.stage).parent().width();
 			//return this.map_grid.width * this.map_grid.tile.width;
-		},
+		};
 
 		// The total height of the game screen. Since our grid takes up the entire screen
 		// this is just the height of a tile times the height of the grid
-		height: function() {
+		this.height = function() {
 			return $(this.stage).parent().height();
 			//return this.map_grid.height * this.map_grid.tile.height;
-		},
+		};
 
-		zIndex: {
+		this.zIndex = {
 			worldLayerGround: 100,
 			worldLayerBelowCharacter: 200,
 			worldLayerCharacter: 300,
 			worldLayerAboveCharacter: 400,
 			worldLayerTop: 800
-		},
+		};
 
-		statusEnum: {
+		// Separate the numbers by 100 in case someone wants to add a state in between without having to increment the subsequent
+		this.statusEnum = {
 			'not-started': 0,
-			'started': 1,
-			'complete': 2
-		},
+			'started': 100,
+			'complete': 200
+		};
 
-		status: (function() {
-			return this.statusEnum['not-started'];
-		}),
+		this.status = this.statusEnum['not-started'];
 
 
-		popRestartGameDialogue: function(message, showPlayAgain) {
+		this.popRestartGameDialogue = function(message, showPlayAgain) {
 			// Make the default true if they don't provide it explicitly
 			showPlayAgain = showPlayAgain == null ? true : showPlayAgain;
 
@@ -68,18 +71,18 @@ define(['crafty', 'jquery', 'general.utilities', 'scenes', 'components'], functi
 				// Get these out of the way since they restarted the game
 				$statusContents.remove();
 			});
-		},
+		};
 
-		clearGameDialogue: function() {
+		this.clearGameDialogue = function() {
 			var $statusBox = $('.game-ui').find('.game-status-box');
 
 			// Clear it out
 			$statusBox.html('');
-		},
+		};
 
 
 		// Initialize and start our game
-		start: function() {
+		this.start = function() {
 			var self = this;
 
 			// Start crafty and set a background color so that we can see it's working
@@ -94,8 +97,8 @@ define(['crafty', 'jquery', 'general.utilities', 'scenes', 'components'], functi
 
 			// Simply start the "Loading" scene to get things going
 			Crafty.scene('Loading');
-		}
-	};
+		};
+	}
 
-	return Game;
+	return new Game();
 });

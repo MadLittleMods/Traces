@@ -1,4 +1,4 @@
-require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], function(Crafty, $, utility, craftyBoxOverlaysComponent) {
+define(['crafty', 'jquery', 'general.utilities', 'game', 'BoxOverlays.component'], function(Crafty, $, utility, Game, craftyBoxOverlaysComponent) {
 	"use strict";
 
 
@@ -454,6 +454,9 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			{
 				// Give them a chance to play again
 				Game.popRestartGameDialogue("You Lost.");
+
+				// The game is not complete
+				Game.status = Game.statusEnum['complete'];
 			}
 
 			this.destroy();
@@ -545,6 +548,7 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 
 		_update: function(e) {
 			var dt = e.dt*0.001;
+			var self = this;
 
 			//console.log("bullet: " + this._entityName);
 
@@ -559,7 +563,35 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			{
 				this.destroy();
 			}
+
+
+
+
+			var aliveHitData = this.hit('Alive');
+			if (aliveHitData && aliveHitData.length > 0)
+			{
+				aliveHitData.forEach(function(hit, index, array) {
+					self._triggerBulletHit(hit);
+				});
+			}
+
+			var solidHitData = this.hit('Solid');
+			if (solidHitData && solidHitData.length > 0)
+			{
+				solidHitData.forEach(function(hit, index, array) {
+					self._triggerBulletHit(hit);
+				});
+			}
+
 		},
+
+		_triggerBulletHit: function(hit) {
+			hit.obj.trigger('bullet-hit', {
+				bullet: this,
+				hit: hit
+			});
+		}
+
 	});
 
 	Crafty.c('Meat', {
@@ -641,7 +673,8 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			this.cleanBind('damaged', this._onDamaged, 'EnemyBlob');
 			this.cleanBind('death', this._onDeath, 'EnemyBlob');
 
-
+			this.cleanBind('bullet-hit', this._onBulletHit, 'EnemyBlob');
+			
 
 			this._characterImage = new Image();
 			this._characterImageLoaded = false;
@@ -704,17 +737,6 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			this._damageCooldownTimer += dt;
 
 
-			/* */
-			// If the bullet runs into a enemy, destroy it
-			var hitdata = this.hit('Bullet');
-			if (hitdata && hitdata.length > 0)
-			{
-				hitdata[0].obj.destroy();
-
-				this.damage(40);
-			}
-
-
 
 			if(this._damageCooldownTimer >= this._damageCooldown)
 			{
@@ -730,7 +752,6 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 					this._damageCooldownTimer = 0;
 				}
 			}
-			/* */
 
 
 			// Check if the current player is close enough otherwise, check for another player
@@ -809,6 +830,14 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			});
 
 			this.destroy();
+		},
+
+		_onBulletHit: function(e) {
+			//console.log(e);
+
+			// When a bullet hits the blob, destroy the bullet and damage the blob
+			e.bullet.destroy();
+			this.damage(40);
 		}
 	});
 
@@ -829,6 +858,8 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			this._blinkLightStatus = false;
 			this._blinkCooldown = 0.5;
 			this._blinkCooldownTimer = 0;
+
+			this.cleanBind('bullet-hit', this._onBulletHit, 'Building');
 		},
 
 		building: function(options) {
@@ -871,8 +902,6 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 				.defferredPiece(this, Game.zIndex.worldLayerBelowCharacter, this._drawShadowPiece.bind(this));
 
 
-
-
 			this.cleanBind('Draw', this._draw, 'Building');
 
 			this.cleanBind('EnterFrame', this._update, 'Building');
@@ -886,13 +915,6 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 
 			// Increase the counter timer of the time elapsed
 			this._blinkCooldownTimer += dt;
-
-			// If the bullet runs into a building, destroy it
-			var hitdata = this.hit('Bullet');
-			if (hitdata && hitdata.length > 0)
-			{
-				hitdata[0].obj.destroy();
-			}
 
 
 			// Toggle the blinking light
@@ -1057,6 +1079,13 @@ require(['crafty', 'jquery', 'general.utilities', 'BoxOverlays.component'], func
 			}
 
 			context.restore();
+		},
+
+		_onBulletHit: function(e) {
+			//console.log(e);
+
+			// When a bullet hits the building, destroy the bullet
+			e.bullet.destroy();
 		}
 
 	});
