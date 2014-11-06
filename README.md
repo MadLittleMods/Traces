@@ -5,6 +5,7 @@ HTML5 canvas browser game created in 3 days for the [GDSE Anniversary Game Jam 2
 
 Powered by [CraftyJS](http://craftyjs.com/).
 
+# [Play Now! (online)](https://madlittlemods.github.io/Traces/dist/)
 
 # Attribution:
 
