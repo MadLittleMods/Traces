@@ -7,6 +7,8 @@ Powered by [CraftyJS](http://craftyjs.com/).
 
 # [Play Now! (online)](https://madlittlemods.github.io/Traces/dist/)
 
+![](https://i.imgur.com/NEukiMg.gif)
+
 # Attribution:
 
 Thank you to following folks on [Open Game Art](http://opengameart.org/) for the amazing assets!
